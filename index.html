@@ -39,7 +39,6 @@
     }
   </script>
   <style>
-    /* Glassmorphism Effects */
     .glass-card {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
@@ -48,27 +47,23 @@
       background: rgba(30, 41, 59, 0.85);
       backdrop-filter: blur(12px);
     }
-    /* Hide Scrollbar */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 antialiased selection:bg-brand-500 selection:text-white">
 
   <!-- ================= AUTH CONTAINER ================= -->
   <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 relative overflow-hidden">
-    <!-- Ambient Decor Circles -->
     <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <!-- LOGIN VIEW -->
     <div id="login-view" class="glass-card p-8 rounded-3xl shadow-2xl shadow-indigo-500/10 w-full max-w-md border border-white/60 dark:border-slate-800 relative z-10 transition-all duration-300">
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4 transform hover:scale-105 transition-transform">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4">
           <i class="fa-solid fa-wallet text-2xl"></i>
         </div>
         <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">DUITKU</h1>
-        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Solusi Cerdas Manajemen Keuangan</p>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Masuk dengan Email / Username Terdaftar</p>
       </div>
 
       <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
@@ -76,7 +71,7 @@
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Username / Email</label>
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-user text-sm"></i></span>
-            <input type="text" id="login-username" required class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Masukkan username">
+            <input type="text" id="login-username" required class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Masukkan email / username">
           </div>
         </div>
 
@@ -108,11 +103,11 @@
     <!-- REGISTER VIEW -->
     <div id="register-view" class="hidden glass-card p-8 rounded-3xl shadow-2xl shadow-indigo-500/10 w-full max-w-md border border-white/60 dark:border-slate-800 relative z-10 transition-all duration-300">
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4 transform hover:scale-105 transition-transform">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4">
           <i class="fa-solid fa-user-plus text-2xl"></i>
         </div>
         <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">Daftar DUITKU</h1>
-        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Buat akun baru untuk mulai kelola budget</p>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Buat akun baru secara permanen</p>
       </div>
 
       <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4">
@@ -179,18 +174,15 @@
 
         <!-- Right Header Actions -->
         <div class="flex items-center gap-2">
-          <!-- Currency Selector Dropdown -->
           <select id="currency-selector" onchange="changeCurrency(this.value)" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-none transition-all cursor-pointer">
             <option value="IDR">IDR (Rp)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="JPY">JPY (¥)</option>
           </select>
-          <!-- Dark Mode Toggle Button -->
           <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center" title="Toggle Mode">
             <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
           </button>
-          <!-- Logout Button -->
           <button onclick="handleLogout()" class="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors flex items-center justify-center" title="Keluar">
             <i class="fa-solid fa-right-from-bracket text-xs"></i>
           </button>
@@ -203,7 +195,6 @@
       
       <!-- SLIDE 1: SALDO, SUMBER DANA & FORM TRANSAKSI -->
       <section id="slide-1" class="space-y-6">
-        <!-- Card Saldo Utama Bergaya Credit Card -->
         <div class="bg-gradient-to-tr from-slate-900 via-indigo-950 to-brand-900 text-white rounded-3xl p-6 shadow-2xl shadow-indigo-950/30 relative overflow-hidden border border-white/10">
           <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
           <div class="absolute -left-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
@@ -325,7 +316,6 @@
 
       <!-- SLIDE 2: GRAFIK & MUTASI TRANSAKSI -->
       <section id="slide-2" class="hidden space-y-6">
-        <!-- Grafik Statistik Mingguan -->
         <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -343,7 +333,6 @@
           </div>
         </div>
 
-        <!-- Daftar Mutasi / Riwayat Transaksi -->
         <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
           <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
@@ -356,7 +345,6 @@
               <p class="text-[11px] text-slate-400 font-medium" id="mutation-count">0 Transaksi</p>
             </div>
 
-            <!-- Tombol Ekspor Data Laporan -->
             <div class="flex items-center gap-2">
               <button onclick="exportToCSV()" class="text-xs bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5">
                 <i class="fa-solid fa-file-excel"></i> Excel/CSV
@@ -375,7 +363,6 @@
 
       <!-- SLIDE 3: INFORMASI PROFILE -->
       <section id="slide-3" class="hidden space-y-6">
-        <!-- Profile Card -->
         <div class="glass-card rounded-3xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 text-center">
           <div class="relative inline-block mb-3">
             <div class="w-20 h-20 bg-gradient-to-tr from-brand-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-brand-500/20 mx-auto">
@@ -398,13 +385,13 @@
             </div>
             <div>
               <p class="text-[10px] text-slate-400 font-semibold uppercase">Status Akun</p>
-              <p class="text-base font-extrabold text-emerald-500 mt-0.5">Aktif</p>
+              <p class="text-base font-extrabold text-emerald-500 mt-0.5">Tersimpan</p>
             </div>
           </div>
 
           <div class="mt-6 space-y-2.5 text-left">
             <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
-              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-user mr-2 text-brand-500"></i>Username</span>
+              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-user mr-2 text-brand-500"></i>Username / Email</span>
               <span class="font-bold" id="prof-username-display">user123</span>
             </div>
             <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
@@ -501,40 +488,66 @@
     </div>
   </div>
 
-  <!-- JavaScript Application Logic with LocalStorage -->
+  <!-- JavaScript Application Logic with Reliable LocalStorage Sync -->
   <script>
-    // System LocalStorage Helpers
     const STORAGE_KEYS = {
-      USERS: 'duitku_registered_users',
-      CURRENT_USER: 'duitku_current_user',
-      SOURCES: 'duitku_sources',
-      TRANSACTIONS: 'duitku_transactions'
+      USERS: 'duitku_registered_users_v2',
+      CURRENT_USER: 'duitku_current_user_v2',
+      SOURCES: 'duitku_sources_v2',
+      TRANSACTIONS: 'duitku_transactions_v2'
     };
 
-    // Load initial state from LocalStorage or default fallback
-    let registeredUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || [
-      { username: 'user123', password: 'password123', fullname: 'Pengguna Demo' }
-    ];
+    // Helper Fungsi untuk Mengambil Akun secara Dinamis dari LocalStorage
+    function getStoredUsers() {
+      const raw = localStorage.getItem(STORAGE_KEYS.USERS);
+      if (!raw) {
+        const defaultUsers = [{ username: 'user123', password: 'password123', fullname: 'Pengguna Demo' }];
+        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(defaultUsers));
+        return defaultUsers;
+      }
+      return JSON.parse(raw);
+    }
 
+    function saveStoredUsers(usersArray) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(usersArray));
+    }
+
+    // Helper Data Sumber Dana & Transaksi
+    function getStoredSources() {
+      const raw = localStorage.getItem(STORAGE_KEYS.SOURCES);
+      if (!raw) {
+        const defaultSources = [
+          { id: 'cash', name: 'Cash', balance: 500000, icon: 'fa-money-bill-wave', color: 'bg-emerald-500' },
+          { id: 'bca', name: 'Rekening BCA', balance: 2500000, icon: 'fa-building-columns', color: 'bg-blue-600' },
+          { id: 'dana', name: 'DANA', balance: 150000, icon: 'fa-mobile-screen-button', color: 'bg-sky-500' },
+          { id: 'gopay', name: 'GOPAY', balance: 200000, icon: 'fa-wallet', color: 'bg-teal-500' },
+          { id: 'ovo', name: 'OVO', balance: 100000, icon: 'fa-credit-card', color: 'bg-purple-600' }
+        ];
+        localStorage.setItem(STORAGE_KEYS.SOURCES, JSON.stringify(defaultSources));
+        return defaultSources;
+      }
+      return JSON.parse(raw);
+    }
+
+    function getStoredTransactions() {
+      const raw = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+      if (!raw) {
+        const defaultTxs = [
+          { id: 1, type: 'income', amount: 3000000, sourceId: 'bca', category: 'Gaji', note: 'Gaji Bulanan', date: '2026-10-12' },
+          { id: 2, type: 'expense', amount: 50000, sourceId: 'cash', category: 'Makanan', note: 'Makan Siang', date: '2026-10-14' },
+          { id: 3, type: 'expense', amount: 20000, sourceId: 'gopay', category: 'Transport', note: 'Ojek Online', date: '2026-10-15' }
+        ];
+        localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(defaultTxs));
+        return defaultTxs;
+      }
+      return JSON.parse(raw);
+    }
+
+    let sources = getStoredSources();
+    let transactions = getStoredTransactions();
     let currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRENT_USER)) || null;
 
-    let sources = JSON.parse(localStorage.getItem(STORAGE_KEYS.SOURCES)) || [
-      { id: 'cash', name: 'Cash', balance: 500000, icon: 'fa-money-bill-wave', color: 'bg-emerald-500' },
-      { id: 'bca', name: 'Rekening BCA', balance: 2500000, icon: 'fa-building-columns', color: 'bg-blue-600' },
-      { id: 'dana', name: 'DANA', balance: 150000, icon: 'fa-mobile-screen-button', color: 'bg-sky-500' },
-      { id: 'gopay', name: 'GOPAY', balance: 200000, icon: 'fa-wallet', color: 'bg-teal-500' },
-      { id: 'ovo', name: 'OVO', balance: 100000, icon: 'fa-credit-card', color: 'bg-purple-600' }
-    ];
-
-    let transactions = JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)) || [
-      { id: 1, type: 'income', amount: 3000000, sourceId: 'bca', category: 'Gaji', note: 'Gaji Bulanan', date: '2026-10-12' },
-      { id: 2, type: 'expense', amount: 50000, sourceId: 'cash', category: 'Makanan', note: 'Makan Siang', date: '2026-10-14' },
-      { id: 3, type: 'expense', amount: 20000, sourceId: 'gopay', category: 'Transport', note: 'Ojek Online', date: '2026-10-15' }
-    ];
-
-    function saveToLocalStorage() {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(registeredUsers));
-      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
+    function saveAllAppData() {
       localStorage.setItem(STORAGE_KEYS.SOURCES, JSON.stringify(sources));
       localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
     }
@@ -555,7 +568,6 @@
 
     let chartInstance = null;
 
-    // Switch view antara Form Login dan Register
     function switchAuthMode(mode) {
       const loginView = document.getElementById('login-view');
       const registerView = document.getElementById('register-view');
@@ -569,7 +581,6 @@
       }
     }
 
-    // Toggle Password Visibility
     function togglePasswordVisibility(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
@@ -582,46 +593,52 @@
       }
     }
 
-    // Auth Register Function
+    // PROSES REGISTRASI DENGAN PENYIMPANAN LOCALSTORAGE
     function handleRegister(e) {
       e.preventDefault();
       const fullname = document.getElementById('reg-fullname').value.trim();
       const username = document.getElementById('reg-username').value.trim();
       const password = document.getElementById('reg-password').value;
 
-      const exists = registeredUsers.some(u => u.username.toLowerCase() === username.toLowerCase());
-      if (exists) {
-        alert('Username / Email sudah terdaftar. Silakan gunakan username lain!');
+      let users = getStoredUsers();
+
+      // Cek apakah username/email sudah terdaftar
+      const isExist = users.some(u => u.username.toLowerCase() === username.toLowerCase());
+      if (isExist) {
+        alert('Username / Email ini sudah terdaftar! Silakan gunakan email / username lain atau langsung Login.');
         return;
       }
 
-      registeredUsers.push({ username, password, fullname });
-      saveToLocalStorage();
+      // Tambahkan pengguna baru dan simpan ke LocalStorage
+      users.push({ username, password, fullname });
+      saveStoredUsers(users);
 
-      alert('Pendaftaran berhasil! Akun Anda telah tersimpan secara permanen.');
+      alert(`Pendaftaran berhasil! Akun '${username}' telah tersimpan. Silakan login.`);
       
       document.getElementById('register-form').reset();
       document.getElementById('login-username').value = username;
       switchAuthMode('login');
     }
 
-    // Auth Login Function
+    // PROSES LOGIN MENGECEK DATA DARI LOCALSTORAGE
     function handleLogin(e) {
       e.preventDefault();
-      const usernameInput = document.getElementById('login-username').value.trim();
-      const passwordInput = document.getElementById('login-password').value;
+      const inputUser = document.getElementById('login-username').value.trim();
+      const inputPass = document.getElementById('login-password').value;
 
-      const user = registeredUsers.find(u => 
-        u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput
+      let users = getStoredUsers();
+
+      const matchedUser = users.find(u => 
+        u.username.toLowerCase() === inputUser.toLowerCase() && u.password === inputPass
       );
 
-      if (!user) {
-        alert('Username atau password salah! Jika belum punya akun, silakan klik "Daftar Akun Baru".');
+      if (!matchedUser) {
+        alert('Username/Email atau password salah! Pastikan Anda mendaftar terlebih dahulu.');
         return;
       }
 
-      currentUser = user;
-      saveToLocalStorage();
+      currentUser = matchedUser;
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
 
       launchDashboard();
     }
@@ -646,7 +663,6 @@
       switchAuthMode('login');
     }
 
-    // Currency Formatting Function
     function formatCurrency(amountIDR) {
       const currency = currencyRates[currentCurrency];
       const converted = amountIDR * currency.rate;
@@ -665,7 +681,6 @@
       refreshAllUI();
     }
 
-    // Toggle Light / Dark Mode
     function toggleDarkMode() {
       const html = document.documentElement;
       const themeIcon = document.getElementById('theme-icon');
@@ -683,7 +698,6 @@
       if(chartInstance) renderChart();
     }
 
-    // Switch Slide View (1, 2, or 3)
     function switchSlide(slideNum) {
       [1, 2, 3].forEach(n => {
         const slide = document.getElementById(`slide-${n}`);
@@ -702,7 +716,6 @@
       }
     }
 
-    // Sync Data Calculations & UI Rendering
     function updateCalculations() {
       const totalBalance = sources.reduce((sum, s) => sum + Number(s.balance), 0);
       document.getElementById('total-balance').innerText = formatCurrency(totalBalance);
@@ -717,7 +730,6 @@
       document.getElementById('prof-source-count').innerText = sources.length;
     }
 
-    // Render List Sumber Dana
     function renderSources() {
       const sourceList = document.getElementById('source-list');
       const txSourceSelect = document.getElementById('tx-source');
@@ -756,7 +768,6 @@
       });
     }
 
-    // Category options update based on type
     function updateCategoryOptions() {
       const type = document.querySelector('input[name="tx-type"]:checked').value;
       const catSelect = document.getElementById('tx-category');
@@ -769,7 +780,6 @@
       });
     }
 
-    // Add New Transaction & Sync Balance
     function handleAddTransaction(e) {
       e.preventDefault();
       const type = document.querySelector('input[name="tx-type"]:checked').value;
@@ -805,12 +815,11 @@
       document.getElementById('tx-amount').value = '';
       document.getElementById('tx-note').value = '';
 
-      saveToLocalStorage();
+      saveAllAppData();
       refreshAllUI();
       alert('Transaksi berhasil disimpan!');
     }
 
-    // Delete Transaction Catatan & Restore Balance
     function deleteTransaction(id) {
       if (!confirm('Apakah Anda yakin ingin menghapus catatan transaksi ini? Saldo akan disesuaikan kembali.')) return;
 
@@ -828,12 +837,11 @@
         }
 
         transactions.splice(index, 1);
-        saveToLocalStorage();
+        saveAllAppData();
         refreshAllUI();
       }
     }
 
-    // Render Mutation / History List
     function renderMutations() {
       const container = document.getElementById('mutation-list');
       document.getElementById('mutation-count').innerText = `${transactions.length} Transaksi`;
@@ -877,7 +885,6 @@
       });
     }
 
-    // Modal Edit Nominal Saldo Sumber Dana
     function openModalEditBalance(sourceId) {
       const source = sources.find(s => s.id === sourceId);
       if (!source) return;
@@ -901,13 +908,12 @@
       const source = sources.find(s => s.id === sourceId);
       if (source && newAmount >= 0) {
         source.balance = newAmount / currencyRates[currentCurrency].rate;
-        saveToLocalStorage();
+        saveAllAppData();
         closeModalEditBalance();
         refreshAllUI();
       }
     }
 
-    // Modal Add Sumber Dana
     function openModalAddSource() {
       document.getElementById('add-source-name').value = '';
       document.getElementById('add-source-balance').value = 0;
@@ -934,7 +940,7 @@
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
       sources.push({ id, name, balance: balanceInIDR, icon, color: randomColor });
-      saveToLocalStorage();
+      saveAllAppData();
       closeModalAddSource();
       refreshAllUI();
     }
@@ -947,12 +953,11 @@
 
       if (confirm('Apakah Anda yakin ingin menghapus sumber dana ini?')) {
         sources = sources.filter(s => s.id !== sourceId);
-        saveToLocalStorage();
+        saveAllAppData();
         refreshAllUI();
       }
     }
 
-    // Render Weekly Chart using Chart.js
     function renderChart() {
       const ctx = document.getElementById('weeklyChart').getContext('2d');
       const isDark = document.documentElement.classList.contains('dark');
@@ -1009,7 +1014,6 @@
       });
     }
 
-    // EXPORT FEATURES: EXCEL / CSV & PDF
     function exportToCSV() {
       if (transactions.length === 0) {
         alert('Tidak ada data mutasi transaksi untuk diekspor.');
@@ -1087,7 +1091,6 @@
       doc.save(`Laporan_Keuangan_DUITKU_${new Date().toISOString().split('T')[0]}.pdf`);
     }
 
-    // Global Refresh All UI Components
     function refreshAllUI() {
       renderSources();
       updateCalculations();
@@ -1097,14 +1100,14 @@
       }
     }
 
-    // App Initialization
     function initDashboard() {
       updateCategoryOptions();
       refreshAllUI();
     }
 
-    // Auto Login Check on Page Load
+    // Pengecekan Sesi Login Saat Halaman Dimuat
     window.addEventListener('DOMContentLoaded', () => {
+      getStoredUsers(); // Memastikan tabel user terisi
       if (currentUser) {
         launchDashboard();
       }
