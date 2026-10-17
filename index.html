@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUITKU - Modern Budgeting App</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF CDN untuk Ekspor PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts - Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Glassmorphism Effects */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+    }
+    .dark .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+    }
+    /* Hide Scrollbar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ================= AUTH CONTAINER ================= -->
+  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 relative overflow-hidden">
+    <!-- Ambient Decor Circles -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- LOGIN VIEW -->
+    <div id="login-view" class="glass-card p-8 rounded-3xl shadow-2xl shadow-indigo-500/10 w-full max-w-md border border-white/60 dark:border-slate-800 relative z-10 transition-all duration-300">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4 transform hover:scale-105 transition-transform">
+          <i class="fa-solid fa-wallet text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">DUITKU</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Solusi Cerdas Manajemen Keuangan</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Username / Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-user text-sm"></i></span>
+            <input type="text" id="login-username" required class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Masukkan username">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+            <input type="password" id="login-password" required class="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Masukkan password">
+            <button type="button" onclick="togglePasswordVisibility('login-password', 'toggle-icon-login')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+              <i id="toggle-icon-login" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-brand-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm mt-2">
+          <span>Masuk ke DUITKU</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </form>
+
+      <div class="mt-8 pt-5 border-t border-slate-200/60 dark:border-slate-800 text-center">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Belum memiliki akun DUITKU?</p>
+        <button onclick="switchAuthMode('register')" class="mt-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline">
+          Daftar Akun Baru
+        </button>
+      </div>
+    </div>
+
+    <!-- REGISTER VIEW -->
+    <div id="register-view" class="hidden glass-card p-8 rounded-3xl shadow-2xl shadow-indigo-500/10 w-full max-w-md border border-white/60 dark:border-slate-800 relative z-10 transition-all duration-300">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-brand-500/30 mb-4 transform hover:scale-105 transition-transform">
+          <i class="fa-solid fa-user-plus text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">Daftar DUITKU</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1.5 font-medium">Buat akun baru untuk mulai kelola budget</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nama Lengkap</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-id-card text-sm"></i></span>
+            <input type="text" id="reg-fullname" required class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Contoh: Budi Santoso">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Username / Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-envelope text-sm"></i></span>
+            <input type="text" id="reg-username" required class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Username atau email">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Password Baru</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+            <input type="password" id="reg-password" required minlength="6" class="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all" placeholder="Minimal 6 karakter">
+            <button type="button" onclick="togglePasswordVisibility('reg-password', 'toggle-icon-reg')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+              <i id="toggle-icon-reg" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-brand-600/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm mt-2">
+          <i class="fa-solid fa-check-circle"></i>
+          <span>Buat Akun Sekarang</span>
+        </button>
+      </form>
+
+      <div class="mt-8 pt-5 border-t border-slate-200/60 dark:border-slate-800 text-center">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Sudah memiliki akun?</p>
+        <button onclick="switchAuthMode('login')" class="mt-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline">
+          Masuk ke Akun
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= MAIN DASHBOARD APP ================= -->
+  <div id="app-view" class="hidden min-h-screen flex flex-col pb-28">
+    <!-- Header App Bar -->
+    <header class="glass-card sticky top-0 z-20 border-b border-slate-200/60 dark:border-slate-800/80 transition-colors duration-200">
+      <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-tr from-brand-600 to-indigo-500 text-white rounded-2xl flex items-center justify-center font-black tracking-wider shadow-md shadow-brand-500/20 text-xs">
+            DK
+          </div>
+          <div>
+            <h2 class="font-bold text-sm leading-tight" id="user-display-name">Akun Pengguna</h2>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <p class="text-[11px] text-brand-600 dark:text-brand-400 font-semibold">DUITKU Active</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Header Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Currency Selector Dropdown -->
+          <select id="currency-selector" onchange="changeCurrency(this.value)" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 focus:outline-none transition-all cursor-pointer">
+            <option value="IDR">IDR (Rp)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="JPY">JPY (¥)</option>
+          </select>
+          <!-- Dark Mode Toggle Button -->
+          <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center" title="Toggle Mode">
+            <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+          </button>
+          <!-- Logout Button -->
+          <button onclick="handleLogout()" class="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors flex items-center justify-center" title="Keluar">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container Content Body -->
+    <main class="max-w-3xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+      
+      <!-- SLIDE 1: SALDO, SUMBER DANA & FORM TRANSAKSI -->
+      <section id="slide-1" class="space-y-6">
+        <!-- Card Saldo Utama Bergaya Credit Card -->
+        <div class="bg-gradient-to-tr from-slate-900 via-indigo-950 to-brand-900 text-white rounded-3xl p-6 shadow-2xl shadow-indigo-950/30 relative overflow-hidden border border-white/10">
+          <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="absolute -left-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-sim-card text-amber-400 text-2xl rotate-90 opacity-90"></i>
+              <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">DUITKU CARD</span>
+            </div>
+            <i class="fa-brands fa-cc-visa text-3xl text-white/80"></i>
+          </div>
+
+          <div class="mb-6">
+            <span class="text-xs text-slate-400 font-medium">Total Saldo Keuangan</span>
+            <div class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-1" id="total-balance">Rp 0</div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 text-xs">
+            <div class="p-2.5 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/5 flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <i class="fa-solid fa-arrow-down text-xs"></i>
+              </div>
+              <div>
+                <p class="text-[10px] text-slate-400">Pemasukan</p>
+                <p class="font-bold text-emerald-300" id="total-income">Rp 0</p>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/5 flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                <i class="fa-solid fa-arrow-up text-xs"></i>
+              </div>
+              <div>
+                <p class="text-[10px] text-slate-400">Pengeluaran</p>
+                <p class="font-bold text-rose-300" id="total-expense">Rp 0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opsi Sumber Dana -->
+        <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-sm flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <span>Opsi Sumber Dana</span>
+            </h3>
+            <button onclick="openModalAddSource()" class="text-xs bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 hover:bg-brand-100 px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-plus"></i> Tambah
+            </button>
+          </div>
+          <div id="source-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Dynamic Sources Loaded Here -->
+          </div>
+        </div>
+
+        <!-- Form Input Pemasukan / Pengeluaran -->
+        <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
+          <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <span>Catat Transaksi Baru</span>
+          </h3>
+
+          <form onsubmit="handleAddTransaction(event)" class="space-y-4">
+            <div class="grid grid-cols-2 gap-2.5 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl">
+              <label class="cursor-pointer">
+                <input type="radio" name="tx-type" value="income" checked class="peer sr-only" onchange="updateCategoryOptions()">
+                <div class="py-2.5 text-center rounded-xl font-bold text-xs text-slate-500 peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:shadow-md transition-all flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-arrow-down text-[10px]"></i> Pemasukan
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="tx-type" value="expense" class="peer sr-only" onchange="updateCategoryOptions()">
+                <div class="py-2.5 text-center rounded-xl font-bold text-xs text-slate-500 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:shadow-md transition-all flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-arrow-up text-[10px]"></i> Pengeluaran
+                </div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Nominal (<span class="currency-label">IDR</span>)</label>
+                <input type="number" id="tx-amount" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 text-sm font-semibold transition-all" placeholder="Contoh: 50000">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Pilih Sumber Dana</label>
+                <select id="tx-source" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 text-sm font-semibold transition-all">
+                  <!-- Dynamic Options Loaded Here -->
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Kategori</label>
+                <select id="tx-category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 text-sm font-semibold transition-all">
+                  <!-- Dynamic Category Loaded Here -->
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Catatan / Keterangan</label>
+                <input type="text" id="tx-note" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 text-sm font-semibold transition-all" placeholder="Contoh: Beli Makan Siang">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-brand-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm mt-2">
+              <i class="fa-solid fa-plus-circle text-xs"></i>
+              <span>Simpan Transaksi</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: GRAFIK & MUTASI TRANSAKSI -->
+      <section id="slide-2" class="hidden space-y-6">
+        <!-- Grafik Statistik Mingguan -->
+        <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <span>Grafik Keuangan Mingguan</span>
+              </h3>
+              <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Ringkasan transaksi pemasukan & pengeluaran</p>
+            </div>
+          </div>
+          <div class="relative w-full h-60">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Daftar Mutasi / Riwayat Transaksi -->
+        <div class="glass-card rounded-3xl p-5 shadow-sm border border-slate-200/60 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="font-bold text-sm flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-list-check"></i>
+                </div>
+                <span>Riwayat Mutasi DUITKU</span>
+              </h3>
+              <p class="text-[11px] text-slate-400 font-medium" id="mutation-count">0 Transaksi</p>
+            </div>
+
+            <!-- Tombol Ekspor Data Laporan -->
+            <div class="flex items-center gap-2">
+              <button onclick="exportToCSV()" class="text-xs bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-file-excel"></i> Excel/CSV
+              </button>
+              <button onclick="exportToPDF()" class="text-xs bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+              </button>
+            </div>
+          </div>
+
+          <div id="mutation-list" class="space-y-2.5">
+            <!-- Dynamic Mutation Items -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: INFORMASI PROFILE -->
+      <section id="slide-3" class="hidden space-y-6">
+        <!-- Profile Card -->
+        <div class="glass-card rounded-3xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 text-center">
+          <div class="relative inline-block mb-3">
+            <div class="w-20 h-20 bg-gradient-to-tr from-brand-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-brand-500/20 mx-auto">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Status Aktif"></span>
+          </div>
+
+          <h3 class="font-extrabold text-lg" id="profile-name">User Account</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pengguna DUITKU Premium</p>
+
+          <div class="mt-6 grid grid-cols-3 gap-2 text-center border-t border-b border-slate-200/60 dark:border-slate-800 py-4">
+            <div>
+              <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Mutasi</p>
+              <p class="text-base font-extrabold text-brand-600 dark:text-brand-400 mt-0.5" id="prof-tx-count">0</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-semibold uppercase">Sumber Dana</p>
+              <p class="text-base font-extrabold text-brand-600 dark:text-brand-400 mt-0.5" id="prof-source-count">5</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-semibold uppercase">Status Akun</p>
+              <p class="text-base font-extrabold text-emerald-500 mt-0.5">Aktif</p>
+            </div>
+          </div>
+
+          <div class="mt-6 space-y-2.5 text-left">
+            <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
+              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-user mr-2 text-brand-500"></i>Username</span>
+              <span class="font-bold" id="prof-username-display">user123</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
+              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-coins mr-2 text-brand-500"></i>Mata Uang</span>
+              <span class="font-bold text-brand-600 dark:text-brand-400" id="prof-currency-text">IDR (Rupiah)</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
+              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-shield-halved mr-2 text-brand-500"></i>Tipe Akun</span>
+              <span class="font-bold text-brand-500">DUITKU Personal</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60 flex justify-between items-center text-xs">
+              <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-moon mr-2 text-brand-500"></i>Mode Tampilan</span>
+              <span class="font-bold" id="theme-status-text">Light Mode</span>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button onclick="handleLogout()" class="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-semibold text-xs shadow-md active:scale-[0.98] transition-all">
+              <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout dari DUITKU
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Floating Navigation Bar (3 Slides) -->
+    <nav class="fixed bottom-4 left-4 right-4 max-w-sm mx-auto z-30">
+      <div class="glass-card bg-white/90 dark:bg-slate-900/90 rounded-2xl p-1.5 shadow-2xl border border-white/60 dark:border-slate-800 grid grid-cols-3 gap-1">
+        <button onclick="switchSlide(1)" id="nav-btn-1" class="py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-all text-brand-600 dark:text-brand-400 bg-brand-50/80 dark:bg-brand-950/60 font-bold">
+          <i class="fa-solid fa-wallet text-sm"></i>
+          <span class="text-[10px]">Saldo</span>
+        </button>
+        <button onclick="switchSlide(2)" id="nav-btn-2" class="py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-all text-slate-400 hover:text-brand-500 font-medium">
+          <i class="fa-solid fa-chart-line text-sm"></i>
+          <span class="text-[10px]">Grafik</span>
+        </button>
+        <button onclick="switchSlide(3)" id="nav-btn-3" class="py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-all text-slate-400 hover:text-brand-500 font-medium">
+          <i class="fa-solid fa-circle-user text-sm"></i>
+          <span class="text-[10px]">Profile</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ================= MODAL: EDIT SALDO SUMBER DANA ================= -->
+  <div id="modal-edit-balance" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+      <h3 class="font-extrabold text-base mb-1">Edit Nominal Saldo</h3>
+      <p class="text-xs text-slate-400 mb-4" id="edit-source-name">Sumber Dana</p>
+
+      <input type="hidden" id="edit-source-id">
+      <div class="mb-5">
+        <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Nominal Saldo Baru (<span class="currency-label">IDR</span>)</label>
+        <input type="number" id="edit-source-amount" min="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-semibold focus:ring-2 focus:ring-brand-500">
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="closeModalEditBalance()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700">Batal</button>
+        <button onclick="saveBalanceEdit()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white text-xs font-bold shadow-md hover:from-brand-700 hover:to-indigo-700">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: TAMBAH SUMBER DANA ================= -->
+  <div id="modal-add-source" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+      <h3 class="font-extrabold text-base mb-4">Tambah Sumber Dana</h3>
+
+      <div class="space-y-3 mb-5">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Nama Sumber Dana</label>
+          <input type="text" id="add-source-name" placeholder="Contoh: Bank Mandiri, ShopeePay" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-semibold focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Saldo Awal (<span class="currency-label">IDR</span>)</label>
+          <input type="number" id="add-source-balance" min="0" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-semibold focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Pilih Ikon</label>
+          <select id="add-source-icon" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-semibold">
+            <option value="fa-building-columns">Bank / Rekening</option>
+            <option value="fa-mobile-screen-button">E-Wallet / Digital</option>
+            <option value="fa-money-bill-wave">Cash / Tunai</option>
+            <option value="fa-credit-card">Kartu Kredit / Debit</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="closeModalAddSource()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700">Batal</button>
+        <button onclick="saveNewSource()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white text-xs font-bold shadow-md hover:from-brand-700 hover:to-indigo-700">Tambah</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    // State Users Account Storage
+    let registeredUsers = [
+      { username: 'user123', password: 'password123', fullname: 'Pengguna Demo' }
+    ];
+
+    let currentUser = null;
+
+    // State Data Currency
+    let currentCurrency = 'IDR';
+    const currencyRates = {
+      IDR: { symbol: 'Rp', rate: 1, name: 'IDR (Rupiah)' },
+      USD: { symbol: '$', rate: 0.000064, name: 'USD (Dolar US)' },
+      EUR: { symbol: '€', rate: 0.000059, name: 'EUR (Euro)' },
+      JPY: { symbol: '¥', rate: 0.0096, name: 'JPY (Yen Jepang)' }
+    };
+
+    // State Data Default
+    let sources = [
+      { id: 'cash', name: 'Cash', balance: 500000, icon: 'fa-money-bill-wave', color: 'bg-emerald-500' },
+      { id: 'bca', name: 'Rekening BCA', balance: 2500000, icon: 'fa-building-columns', color: 'bg-blue-600' },
+      { id: 'dana', name: 'DANA', balance: 150000, icon: 'fa-mobile-screen-button', color: 'bg-sky-500' },
+      { id: 'gopay', name: 'GOPAY', balance: 200000, icon: 'fa-wallet', color: 'bg-teal-500' },
+      { id: 'ovo', name: 'OVO', balance: 100000, icon: 'fa-credit-card', color: 'bg-purple-600' }
+    ];
+
+    let transactions = [
+      { id: 1, type: 'income', amount: 3000000, sourceId: 'bca', category: 'Gaji', note: 'Gaji Bulanan', date: '2026-10-12' },
+      { id: 2, type: 'expense', amount: 50000, sourceId: 'cash', category: 'Makanan', note: 'Makan Siang', date: '2026-10-14' },
+      { id: 3, type: 'expense', amount: 20000, sourceId: 'gopay', category: 'Transport', note: 'Ojek Online', date: '2026-10-15' }
+    ];
+
+    const categories = {
+      income: ['Gaji', 'Bonus', 'Investasi', 'Penjualan', 'Lainnya'],
+      expense: ['Makanan', 'Transport', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Lainnya']
+    };
+
+    let chartInstance = null;
+
+    // Switch view antara Form Login dan Register
+    function switchAuthMode(mode) {
+      const loginView = document.getElementById('login-view');
+      const registerView = document.getElementById('register-view');
+
+      if (mode === 'register') {
+        loginView.classList.add('hidden');
+        registerView.classList.remove('hidden');
+      } else {
+        registerView.classList.add('hidden');
+        loginView.classList.remove('hidden');
+      }
+    }
+
+    // Toggle Password Visibility
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
+    // Auth Register Function
+    function handleRegister(e) {
+      e.preventDefault();
+      const fullname = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      const exists = registeredUsers.some(u => u.username.toLowerCase() === username.toLowerCase());
+      if (exists) {
+        alert('Username / Email sudah terdaftar. Silakan gunakan username lain!');
+        return;
+      }
+
+      registeredUsers.push({ username, password, fullname });
+      alert('Pendaftaran berhasil! Silakan login dengan akun baru Anda.');
+      
+      document.getElementById('register-form').reset();
+      document.getElementById('login-username').value = username;
+      switchAuthMode('login');
+    }
+
+    // Auth Login Function
+    function handleLogin(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById('login-username').value.trim();
+      const passwordInput = document.getElementById('login-password').value;
+
+      const user = registeredUsers.find(u => 
+        u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput
+      );
+
+      if (!user) {
+        alert('Username atau password salah! Jika belum punya akun, silakan klik "Daftar Akun Baru".');
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('user-display-name').innerText = user.fullname || user.username;
+      document.getElementById('profile-name').innerText = user.fullname || user.username;
+      document.getElementById('prof-username-display').innerText = user.username;
+
+      document.getElementById('auth-container').classList.add('hidden');
+      document.getElementById('app-view').classList.remove('hidden');
+
+      initDashboard();
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      document.getElementById('app-view').classList.add('hidden');
+      document.getElementById('auth-container').classList.remove('hidden');
+      switchAuthMode('login');
+    }
+
+    // Currency Formatting Function
+    function formatCurrency(amountIDR) {
+      const currency = currencyRates[currentCurrency];
+      const converted = amountIDR * currency.rate;
+
+      if (currentCurrency === 'IDR') {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(converted);
+      } else {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, minimumFractionDigits: 2 }).format(converted);
+      }
+    }
+
+    function changeCurrency(newCurrency) {
+      currentCurrency = newCurrency;
+      document.querySelectorAll('.currency-label').forEach(el => el.innerText = newCurrency);
+      document.getElementById('prof-currency-text').innerText = currencyRates[newCurrency].name;
+      refreshAllUI();
+    }
+
+    // Toggle Light / Dark Mode
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('theme-icon');
+      const themeStatusText = document.getElementById('theme-status-text');
+
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+        if(themeStatusText) themeStatusText.innerText = 'Light Mode';
+      } else {
+        html.classList.add('dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+        if(themeStatusText) themeStatusText.innerText = 'Dark Mode';
+      }
+      if(chartInstance) renderChart();
+    }
+
+    // Switch Slide View (1, 2, or 3)
+    function switchSlide(slideNum) {
+      [1, 2, 3].forEach(n => {
+        const slide = document.getElementById(`slide-${n}`);
+        const btn = document.getElementById(`nav-btn-${n}`);
+        if (n === slideNum) {
+          slide.classList.remove('hidden');
+          btn.className = "py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-all text-brand-600 dark:text-brand-400 bg-brand-50/80 dark:bg-brand-950/60 font-bold shadow-sm";
+        } else {
+          slide.classList.add('hidden');
+          btn.className = "py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-all text-slate-400 hover:text-brand-500 font-medium";
+        }
+      });
+
+      if (slideNum === 2) {
+        setTimeout(() => renderChart(), 100);
+      }
+    }
+
+    // Sync Data Calculations & UI Rendering
+    function updateCalculations() {
+      const totalBalance = sources.reduce((sum, s) => sum + Number(s.balance), 0);
+      document.getElementById('total-balance').innerText = formatCurrency(totalBalance);
+
+      const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0);
+      const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0);
+
+      document.getElementById('total-income').innerText = formatCurrency(totalIncome);
+      document.getElementById('total-expense').innerText = formatCurrency(totalExpense);
+
+      document.getElementById('prof-tx-count').innerText = transactions.length;
+      document.getElementById('prof-source-count').innerText = sources.length;
+    }
+
+    // Render List Sumber Dana
+    function renderSources() {
+      const sourceList = document.getElementById('source-list');
+      const txSourceSelect = document.getElementById('tx-source');
+      
+      sourceList.innerHTML = '';
+      txSourceSelect.innerHTML = '';
+
+      sources.forEach(source => {
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-2xl border border-slate-200/60 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 flex items-center justify-between hover:border-brand-500/40 transition-all";
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl ${source.color || 'bg-brand-500'} text-white flex items-center justify-center text-sm shadow-md shadow-slate-500/10">
+              <i class="fa-solid ${source.icon}"></i>
+            </div>
+            <div>
+              <p class="font-bold text-xs">${source.name}</p>
+              <p class="text-xs font-extrabold text-brand-600 dark:text-brand-400 mt-0.5">${formatCurrency(source.balance)}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="openModalEditBalance('${source.id}')" class="p-1.5 text-slate-400 hover:text-brand-500 transition-colors" title="Edit Saldo">
+              <i class="fa-solid fa-pen-to-square text-xs"></i>
+            </button>
+            <button onclick="deleteSource('${source.id}')" class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Hapus Sumber Dana">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        `;
+        sourceList.appendChild(card);
+
+        const opt = document.createElement('option');
+        opt.value = source.id;
+        opt.innerText = `${source.name} (${formatCurrency(source.balance)})`;
+        txSourceSelect.appendChild(opt);
+      });
+    }
+
+    // Category options update based on type
+    function updateCategoryOptions() {
+      const type = document.querySelector('input[name="tx-type"]:checked').value;
+      const catSelect = document.getElementById('tx-category');
+      catSelect.innerHTML = '';
+      categories[type].forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = cat;
+        catSelect.appendChild(opt);
+      });
+    }
+
+    // Add New Transaction & Sync Balance
+    function handleAddTransaction(e) {
+      e.preventDefault();
+      const type = document.querySelector('input[name="tx-type"]:checked').value;
+      const inputAmount = Number(document.getElementById('tx-amount').value);
+      const sourceId = document.getElementById('tx-source').value;
+      const category = document.getElementById('tx-category').value;
+      const note = document.getElementById('tx-note').value;
+
+      const amountInIDR = inputAmount / currencyRates[currentCurrency].rate;
+      const source = sources.find(s => s.id === sourceId);
+
+      if (type === 'expense' && source.balance < amountInIDR) {
+        alert('Saldo sumber dana tidak mencukupi untuk pengeluaran ini!');
+        return;
+      }
+
+      if (type === 'income') {
+        source.balance += amountInIDR;
+      } else {
+        source.balance -= amountInIDR;
+      }
+
+      transactions.unshift({
+        id: Date.now(),
+        type,
+        amount: amountInIDR,
+        sourceId,
+        category,
+        note,
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      document.getElementById('tx-amount').value = '';
+      document.getElementById('tx-note').value = '';
+
+      refreshAllUI();
+      alert('Transaksi berhasil disimpan!');
+    }
+
+    // Delete Transaction Catatan & Restore Balance
+    function deleteTransaction(id) {
+      if (!confirm('Apakah Anda yakin ingin menghapus catatan transaksi ini? Saldo akan disesuaikan kembali.')) return;
+
+      const index = transactions.findIndex(t => t.id === id);
+      if (index !== -1) {
+        const tx = transactions[index];
+        const source = sources.find(s => s.id === tx.sourceId);
+
+        if (source) {
+          if (tx.type === 'income') {
+            source.balance -= tx.amount;
+          } else {
+            source.balance += tx.amount;
+          }
+        }
+
+        transactions.splice(index, 1);
+        refreshAllUI();
+      }
+    }
+
+    // Render Mutation / History List
+    function renderMutations() {
+      const container = document.getElementById('mutation-list');
+      document.getElementById('mutation-count').innerText = `${transactions.length} Transaksi`;
+      container.innerHTML = '';
+
+      if (transactions.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Belum ada catatan transaksi.</div>`;
+        return;
+      }
+
+      transactions.forEach(tx => {
+        const source = sources.find(s => s.id === tx.sourceId) || { name: 'Unknown' };
+        const isIncome = tx.type === 'income';
+
+        const item = document.createElement('div');
+        item.className = "p-3.5 rounded-2xl border border-slate-200/60 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 flex items-center justify-between gap-3 hover:border-brand-500/30 transition-all";
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center ${isIncome ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400'} font-bold">
+              <i class="fa-solid ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-xs"></i>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-800 dark:text-slate-100">${tx.note}</p>
+              <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5 font-medium">
+                <span class="bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-300">${source.name}</span>
+                <span>• ${tx.category}</span>
+                <span>• ${tx.date}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-extrabold text-xs ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+              ${isIncome ? '+' : '-'}${formatCurrency(tx.amount)}
+            </span>
+            <button onclick="deleteTransaction(${tx.id})" class="text-slate-400 hover:text-rose-500 text-xs p-1" title="Hapus Catatan">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Modal Edit Nominal Saldo Sumber Dana
+    function openModalEditBalance(sourceId) {
+      const source = sources.find(s => s.id === sourceId);
+      if (!source) return;
+
+      const convertedVal = source.balance * currencyRates[currentCurrency].rate;
+
+      document.getElementById('edit-source-id').value = source.id;
+      document.getElementById('edit-source-name').innerText = `Ubah nominal saldo untuk ${source.name}`;
+      document.getElementById('edit-source-amount').value = Math.round(convertedVal);
+      document.getElementById('modal-edit-balance').classList.remove('hidden');
+    }
+
+    function closeModalEditBalance() {
+      document.getElementById('modal-edit-balance').classList.add('hidden');
+    }
+
+    function saveBalanceEdit() {
+      const sourceId = document.getElementById('edit-source-id').value;
+      const newAmount = Number(document.getElementById('edit-source-amount').value);
+
+      const source = sources.find(s => s.id === sourceId);
+      if (source && newAmount >= 0) {
+        source.balance = newAmount / currencyRates[currentCurrency].rate;
+        closeModalEditBalance();
+        refreshAllUI();
+      }
+    }
+
+    // Modal Add Sumber Dana
+    function openModalAddSource() {
+      document.getElementById('add-source-name').value = '';
+      document.getElementById('add-source-balance').value = 0;
+      document.getElementById('modal-add-source').classList.remove('hidden');
+    }
+
+    function closeModalAddSource() {
+      document.getElementById('modal-add-source').classList.add('hidden');
+    }
+
+    function saveNewSource() {
+      const name = document.getElementById('add-source-name').value.trim();
+      const inputBalance = Number(document.getElementById('add-source-balance').value);
+      const icon = document.getElementById('add-source-icon').value;
+
+      if (!name) {
+        alert('Nama sumber dana tidak boleh kosong');
+        return;
+      }
+
+      const balanceInIDR = inputBalance / currencyRates[currentCurrency].rate;
+      const id = 'src-' + Date.now();
+      const colors = ['bg-indigo-600', 'bg-amber-500', 'bg-pink-600', 'bg-cyan-600'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+      sources.push({ id, name, balance: balanceInIDR, icon, color: randomColor });
+      closeModalAddSource();
+      refreshAllUI();
+    }
+
+    function deleteSource(sourceId) {
+      if (sources.length <= 1) {
+        alert('Minimal harus terdapat 1 opsi sumber dana!');
+        return;
+      }
+
+      if (confirm('Apakah Anda yakin ingin menghapus sumber dana ini?')) {
+        sources = sources.filter(s => s.id !== sourceId);
+        refreshAllUI();
+      }
+    }
+
+    // Render Weekly Chart using Chart.js
+    function renderChart() {
+      const ctx = document.getElementById('weeklyChart').getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      const rate = currencyRates[currentCurrency].rate;
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const rawIncomeData = [500000, 0, 3000000, 0, 200000, 0, 150000];
+      const rawExpenseData = [150000, 75000, 50000, 200000, 120000, 300000, 50000];
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+          datasets: [
+            {
+              label: `Pemasukan (${currentCurrency})`,
+              data: rawIncomeData.map(v => v * rate),
+              backgroundColor: '#10b981',
+              borderRadius: 8
+            },
+            {
+              label: `Pengeluaran (${currentCurrency})`,
+              data: rawExpenseData.map(v => v * rate),
+              backgroundColor: '#f43f5e',
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: isDark ? '#cbd5e1' : '#475569',
+                font: { size: 11, family: 'Plus Jakarta Sans', weight: '600' }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: isDark ? '#94a3b8' : '#64748b', font: { family: 'Plus Jakarta Sans' } },
+              grid: { display: false }
+            },
+            y: {
+              ticks: { color: isDark ? '#94a3b8' : '#64748b', font: { family: 'Plus Jakarta Sans' } },
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.5)' : 'rgba(226, 232, 240, 0.8)' }
+            }
+          }
+        }
+      });
+    }
+
+    // EXPORT FEATURES: EXCEL / CSV & PDF
+    function exportToCSV() {
+      if (transactions.length === 0) {
+        alert('Tidak ada data mutasi transaksi untuk diekspor.');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,ID,Tanggal,Jenis,Kategori,Sumber Dana,Catatan,Nominal (" + currentCurrency + ")\n";
+
+      transactions.forEach(tx => {
+        const source = sources.find(s => s.id === tx.sourceId) || { name: 'Unknown' };
+        const formattedAmount = (tx.amount * currencyRates[currentCurrency].rate).toFixed(2);
+        csvContent += `${tx.id},${tx.date},${tx.type},${tx.category},"${source.name}","${tx.note}",${formattedAmount}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Laporan_Mutasi_DUITKU_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToPDF() {
+      if (typeof window.jspdf === 'undefined') {
+        alert('Modul PDF sedang dimuat, silakan coba beberapa detik lagi.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.setTextColor(79, 70, 229);
+      doc.text("DUITKU - Laporan Keuangan", 14, 20);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 14, 27);
+      doc.text(`Mata Uang: ${currentCurrency}`, 14, 32);
+
+      const totalBal = sources.reduce((s, x) => s + x.balance, 0);
+      const totalInc = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+      const totalExp = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+      doc.setDrawColor(226, 232, 240);
+      doc.line(14, 36, 196, 36);
+
+      doc.setFontSize(10);
+      doc.setTextColor(40);
+      doc.text(`Total Saldo    : ${formatCurrency(totalBal)}`, 14, 44);
+      doc.text(`Total Pemasukan: ${formatCurrency(totalInc)}`, 14, 50);
+      doc.text(`Total Pengeluaran: ${formatCurrency(totalExp)}`, 14, 56);
+
+      const tableRows = transactions.map(tx => {
+        const source = sources.find(s => s.id === tx.sourceId) || { name: 'Unknown' };
+        return [
+          tx.date,
+          tx.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+          tx.category,
+          source.name,
+          tx.note,
+          formatCurrency(tx.amount)
+        ];
+      });
+
+      doc.autoTable({
+        startY: 62,
+        head: [['Tanggal', 'Jenis', 'Kategori', 'Sumber Dana', 'Catatan', 'Nominal']],
+        body: tableRows,
+        headStyles: { fillColor: [79, 70, 229] },
+        styles: { fontSize: 8 }
+      });
+
+      doc.save(`Laporan_Keuangan_DUITKU_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+
+    // Global Refresh All UI Components
+    function refreshAllUI() {
+      renderSources();
+      updateCalculations();
+      renderMutations();
+      if (!document.getElementById('slide-2').classList.contains('hidden')) {
+        renderChart();
+      }
+    }
+
+    // App Initialization
+    function initDashboard() {
+      updateCategoryOptions();
+      refreshAllUI();
+    }
+  </script>
+</body>
+</html>
