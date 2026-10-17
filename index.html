@@ -452,7 +452,7 @@
 
   <!-- ================= MODAL: EDIT SALDO SUMBER DANA ================= -->
   <div id="modal-edit-balance" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700">
       <h3 class="font-extrabold text-base mb-1">Edit Nominal Saldo</h3>
       <p class="text-xs text-slate-400 mb-4" id="edit-source-name">Sumber Dana</p>
 
@@ -471,7 +471,7 @@
 
   <!-- ================= MODAL: TAMBAH SUMBER DANA ================= -->
   <div id="modal-add-source" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+    <div class="glass-card bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/60 dark:border-slate-700">
       <h3 class="font-extrabold text-base mb-4">Tambah Sumber Dana</h3>
 
       <div class="space-y-3 mb-5">
@@ -501,14 +501,43 @@
     </div>
   </div>
 
-  <!-- JavaScript Application Logic -->
+  <!-- JavaScript Application Logic with LocalStorage -->
   <script>
-    // State Users Account Storage
-    let registeredUsers = [
+    // System LocalStorage Helpers
+    const STORAGE_KEYS = {
+      USERS: 'duitku_registered_users',
+      CURRENT_USER: 'duitku_current_user',
+      SOURCES: 'duitku_sources',
+      TRANSACTIONS: 'duitku_transactions'
+    };
+
+    // Load initial state from LocalStorage or default fallback
+    let registeredUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || [
       { username: 'user123', password: 'password123', fullname: 'Pengguna Demo' }
     ];
 
-    let currentUser = null;
+    let currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRENT_USER)) || null;
+
+    let sources = JSON.parse(localStorage.getItem(STORAGE_KEYS.SOURCES)) || [
+      { id: 'cash', name: 'Cash', balance: 500000, icon: 'fa-money-bill-wave', color: 'bg-emerald-500' },
+      { id: 'bca', name: 'Rekening BCA', balance: 2500000, icon: 'fa-building-columns', color: 'bg-blue-600' },
+      { id: 'dana', name: 'DANA', balance: 150000, icon: 'fa-mobile-screen-button', color: 'bg-sky-500' },
+      { id: 'gopay', name: 'GOPAY', balance: 200000, icon: 'fa-wallet', color: 'bg-teal-500' },
+      { id: 'ovo', name: 'OVO', balance: 100000, icon: 'fa-credit-card', color: 'bg-purple-600' }
+    ];
+
+    let transactions = JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)) || [
+      { id: 1, type: 'income', amount: 3000000, sourceId: 'bca', category: 'Gaji', note: 'Gaji Bulanan', date: '2026-10-12' },
+      { id: 2, type: 'expense', amount: 50000, sourceId: 'cash', category: 'Makanan', note: 'Makan Siang', date: '2026-10-14' },
+      { id: 3, type: 'expense', amount: 20000, sourceId: 'gopay', category: 'Transport', note: 'Ojek Online', date: '2026-10-15' }
+    ];
+
+    function saveToLocalStorage() {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(registeredUsers));
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
+      localStorage.setItem(STORAGE_KEYS.SOURCES, JSON.stringify(sources));
+      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+    }
 
     // State Data Currency
     let currentCurrency = 'IDR';
@@ -518,21 +547,6 @@
       EUR: { symbol: '€', rate: 0.000059, name: 'EUR (Euro)' },
       JPY: { symbol: '¥', rate: 0.0096, name: 'JPY (Yen Jepang)' }
     };
-
-    // State Data Default
-    let sources = [
-      { id: 'cash', name: 'Cash', balance: 500000, icon: 'fa-money-bill-wave', color: 'bg-emerald-500' },
-      { id: 'bca', name: 'Rekening BCA', balance: 2500000, icon: 'fa-building-columns', color: 'bg-blue-600' },
-      { id: 'dana', name: 'DANA', balance: 150000, icon: 'fa-mobile-screen-button', color: 'bg-sky-500' },
-      { id: 'gopay', name: 'GOPAY', balance: 200000, icon: 'fa-wallet', color: 'bg-teal-500' },
-      { id: 'ovo', name: 'OVO', balance: 100000, icon: 'fa-credit-card', color: 'bg-purple-600' }
-    ];
-
-    let transactions = [
-      { id: 1, type: 'income', amount: 3000000, sourceId: 'bca', category: 'Gaji', note: 'Gaji Bulanan', date: '2026-10-12' },
-      { id: 2, type: 'expense', amount: 50000, sourceId: 'cash', category: 'Makanan', note: 'Makan Siang', date: '2026-10-14' },
-      { id: 3, type: 'expense', amount: 20000, sourceId: 'gopay', category: 'Transport', note: 'Ojek Online', date: '2026-10-15' }
-    ];
 
     const categories = {
       income: ['Gaji', 'Bonus', 'Investasi', 'Penjualan', 'Lainnya'],
@@ -582,7 +596,9 @@
       }
 
       registeredUsers.push({ username, password, fullname });
-      alert('Pendaftaran berhasil! Silakan login dengan akun baru Anda.');
+      saveToLocalStorage();
+
+      alert('Pendaftaran berhasil! Akun Anda telah tersimpan secara permanen.');
       
       document.getElementById('register-form').reset();
       document.getElementById('login-username').value = username;
@@ -605,9 +621,15 @@
       }
 
       currentUser = user;
-      document.getElementById('user-display-name').innerText = user.fullname || user.username;
-      document.getElementById('profile-name').innerText = user.fullname || user.username;
-      document.getElementById('prof-username-display').innerText = user.username;
+      saveToLocalStorage();
+
+      launchDashboard();
+    }
+
+    function launchDashboard() {
+      document.getElementById('user-display-name').innerText = currentUser.fullname || currentUser.username;
+      document.getElementById('profile-name').innerText = currentUser.fullname || currentUser.username;
+      document.getElementById('prof-username-display').innerText = currentUser.username;
 
       document.getElementById('auth-container').classList.add('hidden');
       document.getElementById('app-view').classList.remove('hidden');
@@ -617,6 +639,8 @@
 
     function handleLogout() {
       currentUser = null;
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+
       document.getElementById('app-view').classList.add('hidden');
       document.getElementById('auth-container').classList.remove('hidden');
       switchAuthMode('login');
@@ -781,6 +805,7 @@
       document.getElementById('tx-amount').value = '';
       document.getElementById('tx-note').value = '';
 
+      saveToLocalStorage();
       refreshAllUI();
       alert('Transaksi berhasil disimpan!');
     }
@@ -803,6 +828,7 @@
         }
 
         transactions.splice(index, 1);
+        saveToLocalStorage();
         refreshAllUI();
       }
     }
@@ -875,6 +901,7 @@
       const source = sources.find(s => s.id === sourceId);
       if (source && newAmount >= 0) {
         source.balance = newAmount / currencyRates[currentCurrency].rate;
+        saveToLocalStorage();
         closeModalEditBalance();
         refreshAllUI();
       }
@@ -907,6 +934,7 @@
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
       sources.push({ id, name, balance: balanceInIDR, icon, color: randomColor });
+      saveToLocalStorage();
       closeModalAddSource();
       refreshAllUI();
     }
@@ -919,6 +947,7 @@
 
       if (confirm('Apakah Anda yakin ingin menghapus sumber dana ini?')) {
         sources = sources.filter(s => s.id !== sourceId);
+        saveToLocalStorage();
         refreshAllUI();
       }
     }
@@ -1073,6 +1102,13 @@
       updateCategoryOptions();
       refreshAllUI();
     }
+
+    // Auto Login Check on Page Load
+    window.addEventListener('DOMContentLoaded', () => {
+      if (currentUser) {
+        launchDashboard();
+      }
+    });
   </script>
 </body>
 </html>
